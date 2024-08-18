@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Stylist</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <h1>Color Stylist</h1>
+    <form id="upload-form" enctype="multipart/form-data">
+        <div>
+            <label for="tops">Upload Tops Image:</label>
+            <input type="file" name="tops" accept="image/*" required>
+        </div>
+        <div>
+            <label for="bottoms">Upload Bottoms Image:</label>
+            <input type="file" name="bottoms" accept="image/*" required>
+        </div>
+        <div>
+            <label for="selfie">Upload Selfie:</label>
+            <input type="file" name="selfie" accept="image/*" required>
+        </div>
+        <button type="submit">Analyze Wardrobe</button>
+    </form>
+    <div id="results"></div>
+
+    <script>
+        document.getElementById('upload-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+            fetch('/', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                var resultsDiv = document.getElementById('results');
+                resultsDiv.innerHTML = '<h2>Results:</h2>';
+                
+                resultsDiv.innerHTML += '<h3>Color Matches:</h3>';
+                data.matches.forEach(match => {
+                    resultsDiv.innerHTML += `<p>${match[0]} top with ${match[1]} bottom</p>`;
+                });
+
+                resultsDiv.innerHTML += `<h3>Your Skin Tone: ${data.skin_tone}</h3>`;
+                
+                resultsDiv.innerHTML += '<h3>Color Recommendations:</h3>';
+                data.recommendations.forEach(color => {
+                    resultsDiv.innerHTML += `<p>${color}</p>`;
+                });
+            });
+        });
+    </script>
+</body>
+</html>
